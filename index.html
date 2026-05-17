@@ -3,292 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stark Labs - Advanced Agent Interface</title>
+    <title>Stark Mainframe - Live HUD</title>
     <style>
-        /* Global Reset & Futuristic Background Setup */
+        /* Global Page Reset */
         * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            background-color: #02070e;
-            font-family: 'Segoe UI', 'Courier New', monospace;
+            background-color: #03080f;
+            font-family: 'Courier New', monospace;
         }
 
-        /* Hacker Lab Virtual Environment Screens Background */
-        .lab-environment {
+        /* 1. Main Background Layer using your Real Image Asset */
+        .stark-mainframe {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
+            background: url('background.jpg') no-repeat center center;
+            background-size: cover;
             z-index: 1;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(0, 40, 60, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 30, 50, 0.2) 0%, transparent 40%),
-                linear-gradient(rgba(5, 12, 22, 0.9), rgba(2, 6, 12, 0.95));
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Glowing Tech Grid Lines on Background */
-        .lab-environment::before {
-            content: '';
+        /* Cinematic Tech Overlay Layer (Scanlines Effect) */
+        .stark-mainframe::after {
+            content: " ";
+            display: block;
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 204, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 204, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-
-        /* Virtual Digital Code Terminals on Left and Right (Like Pic 1) */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
             z-index: 2;
-            opacity: 0.25;
+            pointer-events: none;
+            opacity: 0.4;
         }
 
-        /* Main HUD Dashboard Layer */
-        .hud-overlay {
+        /* 2. Central Arc Reactor Interactive Glow Ring */
+        .reactor-hotspot {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Cyber pulse animation around the real core */
+            border: 2px dashed rgba(0, 242, 254, 0.2);
+            animation: rotateClockwise 25s linear infinite;
+            transition: all 0.4s ease;
+        }
+
+        .reactor-hotspot:hover {
+            border-color: rgba(0, 255, 204, 0.8);
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.3), inset 0 0 40px rgba(0, 255, 204, 0.2);
+        }
+
+        /* Inner Energy Aura */
+        .energy-aura {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: rgba(0, 242, 254, 0.4);
+            border-bottom-color: rgba(0, 255, 204, 0.4);
+            animation: rotateCounter 10s linear infinite;
+        }
+
+        /* 3. Live Digital Data Text Layers over the Monitors */
+        .live-terminal-overlay {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 40px;
+            z-index: 5;
             pointer-events: none;
         }
 
-        /* Top Header Text Style */
-        .header-title {
-            color: #7bf0ff;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(123, 240, 255, 0.6);
-            margin-top: 10px;
-        }
-
-        /* Center Stage for High-Tech Angular Arc Reactor */
-        .center-stage {
-            position: relative;
-            width: 350px;
-            height: 350px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: auto;
-        }
-
-        /* Spinning Holographic Rings around the Reactor */
-        .holo-ring {
+        /* Left Monitor Animated Logs */
+        .hud-log-left {
             position: absolute;
-            border-radius: 50%;
-            border: 2px dashed rgba(123, 240, 255, 0.3);
-        }
-        .ring-outer {
-            width: 330px;
-            height: 330px;
-            animation: spinClockwise 25s linear infinite;
-            box-shadow: 0 0 15px rgba(123, 240, 255, 0.1);
-        }
-        .ring-inner {
-            width: 300px;
-            height: 300px;
-            border: 2px solid rgba(123, 240, 255, 0.15);
-            border-left: 4px solid #00ffcc;
-            border-right: 4px solid #00ffcc;
-            animation: spinCounter 15s linear infinite;
-        }
-
-        /* High-Tech Angular Arc Reactor Core (Pic 1 Style) */
-        .nano-reactor {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(0,255,204,0.2) 0%, rgba(2,10,20,0.9) 75%);
-            border: 4px solid #338099;
-            /* Hexagonal / Angular Shape Cutting */
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            box-shadow: 0 0 40px rgba(0, 255, 204, 0.4), inset 0 0 25px rgba(0, 255, 204, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .nano-reactor:hover {
-            transform: scale(1.05);
-            border-color: #00ffcc;
-            box-shadow: 0 0 50px rgba(0, 255, 204, 0.7), inset 0 0 35px rgba(0, 255, 204, 0.5);
-            filter: brightness(1.2);
-        }
-
-        /* Central Glowing Power Core */
-        .core-glow {
-            width: 65px;
-            height: 65px;
-            background: #ffffff;
-            clip-path: polygon(50% 0%, 100% 85%, 0% 85%); /* Triangular internal tech light */
-            box-shadow: 0 0 25px #fff, 0 0 50px #00ffcc, 0 0 80px #00ffcc;
-            animation: pulseGlow 1.8s ease-in-out infinite alternate;
-        }
-
-        /* Electrical Energy Discharges Animation Overlay */
-        .energy-arc {
-            position: absolute;
-            width: 115%;
-            height: 115%;
-            border: 1px solid transparent;
-            border-radius: 50%;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.5);
-            animation: lightningFlash 0.6s linear infinite;
-            pointer-events: none;
-        }
-
-        /* Bottom Status Texts */
-        .footer-panel {
-            text-align: center;
-        }
-
-        .status-msg {
-            color: #00ffcc;
-            font-size: 18px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
-            margin-bottom: 10px;
-        }
-
-        .click-prompt {
-            color: #ffffff;
-            font-size: 12px;
-            letter-spacing: 2px;
-            opacity: 0.6;
-            animation: textBlink 1.5s infinite;
-        }
-
-        /* Side Analytical Data Readouts (Like Advanced Lab Monitors) */
-        .side-monitor-left {
-            position: absolute;
-            left: 40px;
-            bottom: 40px;
-            color: #43889c;
-            font-family: monospace;
+            left: 4%;
+            bottom: 8%;
+            color: #52bccc;
             font-size: 11px;
             line-height: 1.8;
-            text-shadow: 0 0 5px rgba(67, 136, 156, 0.3);
+            text-shadow: 0 0 8px rgba(82, 188, 204, 0.6);
+            animation: textGlowPulse 2s infinite alternate;
         }
 
-        .side-monitor-right {
+        /* Right Monitor Animated Logs */
+        .hud-log-right {
             position: absolute;
-            right: 40px;
-            bottom: 40px;
-            color: #43889c;
-            font-family: monospace;
+            right: 4%;
+            bottom: 8%;
+            color: #52bccc;
             font-size: 11px;
             line-height: 1.8;
             text-align: right;
-            text-shadow: 0 0 5px rgba(67, 136, 156, 0.3);
+            text-shadow: 0 0 8px rgba(82, 188, 204, 0.6);
         }
 
-        /* ==========================================================================
-           ANIMATIONS DEFINITIONS
-           ========================================================================== */
-        @keyframes spinClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes spinCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-        @keyframes textBlink { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
-        @keyframes pulseGlow {
-            from { transform: scale(0.9); opacity: 0.8; }
-            to { transform: scale(1.05); opacity: 1; }
-        }
-        @keyframes lightningFlash {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.03); border: 1px dashed rgba(255,255,255,0.2); }
-        }
-
-        /* ==========================================================================
-           ADVANCED LOGIN PANEL SCREEN Overlay (Fades-in after activation)
-           ========================================================================== */
-        .login-screen-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Bottom Status Indicator Bar */
+        .hud-status-bar {
+            position: absolute;
+            bottom: 4%;
             width: 100%;
-            height: 100%;
-            background: #010408;
-            z-index: 999;
+            text-align: center;
+            color: #00ffcc;
+            font-size: 16px;
+            letter-spacing: 6px;
+            font-weight: bold;
+            text-shadow: 0 0 12px rgba(0, 255, 204, 0.8);
+        }
+
+        .hud-sub-prompt {
+            font-size: 11px;
+            color: #ffffff;
+            opacity: 0.6;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            animation: blinkEffect 1.5s infinite;
+        }
+
+        /* ==========================================================================
+           KEYFRAMES ENGINE
+           ========================================================================== */
+        @keyframes rotateClockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes rotateCounter { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        @keyframes blinkEffect { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
+        @keyframes textGlowPulse { 0% { opacity: 0.7; } 100% { opacity: 1; text-shadow: 0 0 15px rgba(82, 188, 204, 0.9); } }
+
+        /* ==========================================================================
+           SECURE LOGIN GATEWAY GATE
+           ========================================================================== */
+        .secure-gate-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 8, 16, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+            transition: opacity 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        .login-screen-overlay.active {
+        .secure-gate-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .secure-login-box {
-            border: 2px solid #00ffcc;
+        .cyber-box {
+            border: 2px solid #00f2fe;
             padding: 40px;
             width: 420px;
-            background: rgba(3, 12, 22, 0.95);
-            box-shadow: 0 0 35px rgba(0, 255, 204, 0.3);
-            color: #00ffcc;
+            background: #020912;
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.3);
+            color: #00f2fe;
             text-align: center;
-            font-family: monospace;
         }
 
-        .secure-login-box h2 {
-            letter-spacing: 3px;
+        .cyber-box h2 {
+            letter-spacing: 6px;
             margin-bottom: 20px;
-            text-shadow: 0 0 8px #00ffcc;
+            text-shadow: 0 0 10px #00f2fe;
         }
 
-        .input-code {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #338099;
+        .pass-input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #1c525e;
             color: #fff;
             padding: 12px;
             text-align: center;
             width: 100%;
             font-size: 16px;
-            letter-spacing: 3px;
+            letter-spacing: 5px;
             outline: none;
             margin-bottom: 25px;
-            transition: 0.3s;
         }
 
-        .input-code:focus {
+        .pass-input:focus {
             border-color: #00ffcc;
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
         }
 
-        .access-btn {
-            background: #00ffcc;
+        .gate-btn {
+            background: #00f2fe;
             border: none;
             color: #000;
             padding: 12px 30px;
             font-weight: bold;
             cursor: pointer;
             letter-spacing: 2px;
-            box-shadow: 0 0 15px #00ffcc;
+            box-shadow: 0 0 15px #00f2fe;
             transition: 0.3s;
         }
 
-        .access-btn:hover {
+        .gate-btn:hover {
             background: #fff;
             box-shadow: 0 0 25px #fff;
         }
@@ -296,112 +224,74 @@
 </head>
 <body>
 
-    <div class="lab-environment"></div>
-
-    <canvas id="matrixDataCanvas"></canvas>
-
-    <div class="hud-overlay" id="mainHUD">
-        <div class="header-title">SYSTEM ACCESS POINT</div>
+    <div class="stark-mainframe">
         
-        <div class="center-stage">
-            <div class="holo-ring ring-outer"></div>
-            <div class="holo-ring ring-inner"></div>
-            <div class="energy-arc"></div>
+        <div class="reactor-hotspot" onclick="triggerSystemAccess()">
+            <div class="energy-aura"></div>
+        </div>
+
+        <div class="live-terminal-overlay">
             
-            <div class="nano-reactor" id="reactorTrigger" onclick="triggerSystemCore()">
-                <div class="core-glow"></div>
+            <div class="hud-log-left" id="matrixLogLeft">
+                HACKER PROTOCOLS: ACTIVE<br>
+                NETWORK STATUS: SECURE<br>
+                ARC POWER: 98%<br>
+                STARK LINK: ESTABLISHED
             </div>
-        </div>
 
-        <div class="footer-panel">
-            <div class="status-msg">AWAITING ACTIVATION COMMAND</div>
-            <div class="click-prompt">[ CLICK REACTOR TO INITIALIZE AGENT ]</div>
-        </div>
+            <div class="hud-log-right">
+                SYS_INITIALIZATION: 100%<br>
+                HARDWARE TOPOLOGY: ONLINE<br>
+                AI MODULES: ENCRYPTED READY<br>
+                CORE MATRIX STATE: STABLE
+            </div>
 
-        <div class="side-monitor-left">
-            SECURE CONNECTION: ESTABLISHED<br>
-            STARK MAIN CORE: VERIFIED<br>
-            MEMBRANE STATUS: STABLE<br>
-            IP PROXIES: ENCRYPTED
-        </div>
+            <div class="hud-status-bar">
+                AWAITING ACTIVATION COMMAND
+                <div class="hud-sub-prompt">[ TOUCH ARC REACTOR CORE TO COMMAND ]</div>
+            </div>
 
-        <div class="side-monitor-right">
-            AGENT INITIALIZATION: 0%<br>
-            HARDWARE INTERFACE: READY<br>
-            AI SYSTEM FEED: IDLE<br>
-            LOAD VALUE: OPTIMAL
         </div>
     </div>
 
-    <div class="login-screen-overlay" id="loginTerminal">
-        <div class="secure-login-box">
-            <h2>SECURITY VERIFICATION</h2>
-            <p style="color: #fff; opacity: 0.6; margin-bottom: 25px; font-size: 13px;">ENTER ACCESS KEY TO SECURE AGENT CONNECTION</p>
-            <input type="password" placeholder="••••••••" class="input-code">
-            <button class="access-btn" onclick="alert('Access Granted! Ab batayein, aage ka logic kya banana hai?')">CONNECT AGENT</button>
+    <div class="secure-gate-overlay" id="accessGate">
+        <div class="cyber-box">
+            <h2>MAINFRAME SECURITY</h2>
+            <p style="color: #fff; opacity: 0.5; margin-bottom: 25px; font-size: 12px; letter-spacing: 1px;">ENCRYPTED VERIFICATION LAYER REQUIRED</p>
+            <input type="password" placeholder="••••••••" class="pass-input">
+            <button class="gate-btn" onclick="alert('Access Confirmed. Interface fully operational.')">INITIALIZE GATE</button>
         </div>
     </div>
 
     <script>
-        // ==========================================================================
-        // MATRIX HACKER DATA STREAMS ENGINE (DIGITAL CODES)
-        // ==========================================================================
-        const canvas = document.getElementById('matrixDataCanvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const matrixChars = "0101010101010101010101010101010101010101";
-        const charSet = matrixChars.split("");
-        const fontSize = 12;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        const runMatrixEngine = () => {
-            ctx.fillStyle = 'rgba(2, 7, 14, 0.05)'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#176b7d'; // Teal/Blueish-Green tone directly matching Pic 1
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const char = charSet[Math.floor(Math.random() * charSet.length)];
-                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        };
-
-        setInterval(runMatrixEngine, 33);
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // ==========================================================================
-        // VOICE OUTPUT & INTERACTION PROTOCOL SYSTEM
-        // ==========================================================================
-        function triggerSystemCore() {
-            // 1. Voice Speech Synthesis "Assalam-o-Alaikum"
+        // System Voice Synthesis Engine Greeting & Modal Overlay Trigger
+        function triggerSystemAccess() {
             if ('speechSynthesis' in window) {
-                let systemVoice = new SpeechSynthesisUtterance();
-                systemVoice.text = "Assalam-o-Alaikum. System Initialized.";
-                systemVoice.language = "en-US";
-                systemVoice.pitch = 0.85; // Deeper futuristic sci-fi sound
-                systemVoice.rate = 0.95;  // Calculated crisp tempo
-                window.speechSynthesis.speak(systemVoice);
+                let liveVoiceNode = new SpeechSynthesisUtterance();
+                liveVoiceNode.text = "Assalam-o-Alaikum. System Initialized.";
+                liveVoiceNode.language = "en-US";
+                liveVoiceNode.pitch = 0.85; 
+                liveVoiceNode.rate = 1.0;  
+                window.speechSynthesis.speak(liveVoiceNode);
             }
 
-            // 2. Fades smoothly into the Login Terminal after 1 second
+            // Open security pop-up panel smoothly
             setTimeout(() => {
-                document.getElementById('loginTerminal').classList.add('active');
-            }, 1000);
+                document.getElementById('accessGate').classList.add('active');
+            }, 800);
         }
+
+        // Live Dynamic Logs Generator to make text feel alive
+        setInterval(() => {
+            const randomHexNode = Math.floor(Math.random() * 100);
+            document.getElementById('matrixLogLeft').innerHTML = `
+                HACKER PROTOCOLS: ACTIVE<br>
+                NETWORK STATUS: SECURE<br>
+                ARC POWER: 98%<br>
+                STARK LINK: ESTABLISHED<br>
+                <span style="color:#00ffcc;">STREAM_NODE_ID: ox${randomHexNode}A...</span>
+            `;
+        }, 1500);
     </script>
 </body>
 </html>
