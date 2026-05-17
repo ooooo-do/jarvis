@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stark Agent Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Hacker Matrix Background */
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI Overlay Container */
+        .ui-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Top Text */
+        .header-text {
+            color: #00ffcc;
+            font-size: 24px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00ffcc;
+            text-transform: uppercase;
+            animation: blink 2s infinite;
+        }
+
+        /* Center Arc Reactor Button */
+        .reactor-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* Nano Tech Triangular Reactor Base */
+        .arc-reactor {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,255,204,0.1) 0%, rgba(0,0,0,0.8) 70%);
+            border: 4px solid #00ffcc;
+            clip-path: polygon(50% 0%, 100% 85%, 0% 85%); /* Makes it a Tony Stark Style Triangle */
+            box-shadow: 0 0 30px #00ffcc, inset 0 0 30px #00ffcc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s ease;
+            animation: rotateReactor 10s linear infinite;
+        }
+
+        /* Inner Glowing Core */
+        .reactor-core {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            clip-path: polygon(50% 0%, 100% 85%, 0% 85%);
+            box-shadow: 0 0 40px #fff, 0 0 60px #00ffcc;
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+
+        /* Electric Ring Effect around reactor */
+        .energy-ring {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 2px dashed #00ffcc;
+            border-radius: 50%;
+            animation: spinCounter 15s linear infinite;
+            opacity: 0.6;
+        }
+
+        .reactor-container:hover .arc-reactor {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px #00ffcc, inset 0 0 50px #00ffcc;
+            filter: brightness(1.2);
+        }
+
+        /* Bottom Text */
+        .footer-text {
+            color: #00ffcc;
+            font-size: 18px;
+            letter-spacing: 3px;
+            text-align: center;
+            text-shadow: 0 0 8px #00ffcc;
+        }
+
+        /* Animations */
+        @keyframes rotateReactor {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spinCounter {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        @keyframes pulse {
+            from { transform: scale(0.8); opacity: 0.7; }
+            to { transform: scale(1.1); opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Hidden Login Screen (Will appear after click) */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .login-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .login-box {
+            border: 2px solid #00ffcc;
+            padding: 40px;
+            background: rgba(0, 20, 20, 0.8);
+            box-shadow: 0 0 20px #00ffcc;
+            color: #00ffcc;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrix"></canvas>
+
+    <!-- UI Overlay -->
+    <div class="ui-container" id="mainUI">
+        <div class="header-text">SYSTEM ACCESS POINT</div>
+        
+        <div class="reactor-container" onclick="activateSystem()">
+            <div class="energy-ring"></div>
+            <div class="arc-reactor">
+                <div class="reactor-core"></div>
+            </div>
+        </div>
+
+        <div class="footer-text">AWAITING ACTIVATION COMMAND<br><span style="font-size: 12px; color: #fff;">[ CLICK REACTOR TO START ]</span></div>
+    </div>
+
+    <!-- Dummy Login Screen for Step 2 -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2>SYSTEM LOCKED</h2>
+            <p style="margin: 20px 0; font-size: 14px;">Bataen Anwarullah, Login Page Kaisa Banana Hai?</p>
+            <input type="password" placeholder="ENTER ACCESS CODE" style="background: transparent; border: 1px solid #00ffcc; color: #fff; padding: 10px; text-align: center; width: 100%;">
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Logic
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = "010101ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        const alphabet = katakana.split("");
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0'; // Green text
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet[Math.floor(Math.random() * alphabet.length)];
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Activation & Voice Logic
+        function activateSystem() {
+            // 1. System speaks "Assalam-o-Alaikum"
+            let speech = new SpeechSynthesisUtterance();
+            speech.text = "Assalam-o-Alaikum. System Initialized.";
+            speech.language = "en-US"; 
+            speech.rate = 1.0; 
+            window.speechSynthesis.speak(speech);
+
+            // 2. Transition to next screen after 1.5 seconds
+            setTimeout(() => {
+                document.getElementById('mainUI').style.display = 'none';
+                document.getElementById('loginScreen').classList.add('active');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
