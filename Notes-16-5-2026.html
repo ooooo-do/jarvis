@@ -1,0 +1,339 @@
+<html>
+        <head><title>Downloaded HTML</title></head>
+        <body>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS // Core System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- SYSTEM RESET & CORE THEME --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #05070a; /* Deep Minimal Stark Black */
+            color: #a5d8ff; /* Soft futuristic blue text */
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* Glowing text effects */
+        .highlight { color: #00f0ff; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); }
+        .cyan { color: #00f0ff; }
+        .yellow { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+
+        /* --- 1. BOOT LOADER ANIMATION --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #030508;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .arc-reactor {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 240, 255, 0.1);
+            border-top: 4px solid #00f0ff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .load-text {
+            margin-top: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: #00f0ff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .progress-bar {
+            width: 250px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-top: 15px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: #00f0ff;
+            box-shadow: 0 0 10px #00f0ff;
+            animation: fillProgress 3s forwards ease-in-out;
+        }
+
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            40% { width: 30%; }
+            70% { width: 85%; }
+            100% { width: 100%; }
+        }
+
+        /* --- 2. MAIN INTERFACE LAYOUT --- */
+        #main-interface {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header Config */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .system-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #00f0ff;
+        }
+
+        .system-status {
+            font-size: 14px;
+        }
+
+        .online {
+            color: #00ff66;
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+        }
+
+        /* Dashboard Grid Layout (Three Panels) */
+        .dashboard {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* Panels Styling (Touch-to-Assemble Theme) */
+        .panel {
+            background: rgba(5, 15, 25, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        .panel-header {
+            background: rgba(0, 240, 255, 0.08);
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            color: #00f0ff;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+        }
+
+        .panel-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Specific Panel Components */
+        .matrix-text {
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .console-screen {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            border: 1px dashed rgba(0, 240, 255, 0.2);
+            font-size: 14px;
+        }
+
+        .line {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid #00f0ff;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .proj-title { font-weight: bold; color: #fff; }
+        .proj-status { font-size: 11px; color: #888; }
+
+        /* Footer Config */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            padding-top: 15px;
+        }
+
+        .footer-note {
+            font-size: 11px;
+            color: rgba(165, 216, 255, 0.4);
+        }
+
+        /* Action Button */
+        .action-btn {
+            background: transparent;
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            padding: 10px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        .action-btn:hover {
+            background: #00f0ff;
+            color: #05070a;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="arc-reactor"></div>
+        <div class="load-text">INITIALIZING JARVIS SYSTEM...</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+
+    <div id="main-interface" class="hidden">
+        <header>
+            <div class="system-title">JARVIS // CORE_v3.0</div>
+            <div class="system-status">SYSTEM STATUS: <span class="online">ONLINE</span></div>
+        </header>
+
+        <main class="dashboard">
+            
+            <section class="panel profile-panel">
+                <div class="panel-header">USER PROFILE</div>
+                <div class="panel-body">
+                    <p class="matrix-text">> USER: <span class="highlight">ANWARULLAH</span></p>
+                    <p class="matrix-text">> ACCESS_LEVEL: <span class="highlight">ADMINISTRATOR</span></p>
+                    <p class="matrix-text">> REGION: <span class="highlight">KASHMIR_PK</span></p>
+                </div>
+            </section>
+
+            <section class="panel console-panel">
+                <div class="panel-header">CENTRAL COMMAND CONSOLE</div>
+                <div class="panel-body console-screen">
+                    <div class="terminal-output">
+                        <p class="line yellow">> Accessing global servers... Done.</p>
+                        <p class="line">> System Diagnostics: 100% Operational.</p>
+                        <p class="line cyan">> Welcome back, sir. All systems are ready for deployment.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel projects-panel">
+                <div class="panel-header">ACTIVE MISSIONS</div>
+                <div class="panel-body project-list">
+                    <div class="project-card">
+                        <span class="proj-title">PROJECT_STATPULSE</span>
+                        <span class="proj-status">CINEMATIC_DOCS</span>
+                    </div>
+                    <div class="project-card">
+                        <span class="proj-title">WEB_CORE_INTERFACE</span>
+                        <span class="proj-status">STARK_LEVEL_UI</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <div class="footer-note">STARK INDUSTRIES // SECURE INTERFACE</div>
+            <button class="action-btn" onclick="systemAlert()">ENGAGE PROTOCOL</button>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth Boot-up Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                const mainUI = document.getElementById('main-interface');
+                
+                loader.style.opacity = '0';
+                loader.style.transition = 'opacity 0.8s ease';
+                
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    mainUI.classList.remove('hidden');
+                    mainUI.style.opacity = '0';
+                    setTimeout(() => {
+                        mainUI.style.opacity = '1';
+                        mainUI.style.transition = 'opacity 1.5s ease';
+                    }, 50);
+                }, 800);
+            }, 3500); // 3.5 seconds boot animation
+        });
+
+        function systemAlert() {
+            alert("SYSTEM WARNING: Stark Interface Online. Protocol 11 Engaged.");
+        }
+    </script>
+</body>
+</html></pre>
+        </body>
+    </html>
